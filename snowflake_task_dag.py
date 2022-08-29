@@ -22,18 +22,6 @@ with DAG('snowflake_task',
          catchup=False
          ) as dag:
 
-    create_tables_task = SnowflakeOperator(
-        task_id='create_tables',
-        snowflake_conn_id='snowflake_conn',
-        sql='create_tables.sql'
-    )
-
-    create_streams_task = SnowflakeOperator(
-        task_id='create_streams',
-        snowflake_conn_id='snowflake_conn',
-        sql='create_streams.sql'
-    )
-
     write_from_csv_to_raw_task = PythonOperator(
         task_id='write_from_csv_to_raw',
         python_callable=write_from_csv_to_raw
@@ -51,5 +39,4 @@ with DAG('snowflake_task',
         sql='write_from_stage_to_master.sql'
     )
 
-    create_tables_task >> create_streams_task >> \
     write_from_csv_to_raw_task >> write_from_raw_to_stage_task >> write_from_stage_to_master_task
